@@ -1,4 +1,4 @@
-# LanzaTech BreSeq Scraper
+# LanzaTech Genbank Converter
 
 [![N|Solid](http://www.lanzatech.com/wp-content/uploads/2014/05/LanzaTech-Logo-Final-a.png)](http://www.lanzatech.com/)
 

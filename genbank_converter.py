@@ -1,6 +1,7 @@
 from __future__ import print_function
 import argparse
 import bio_util
+from Bio import SeqIO
 import sys
 import os
 
@@ -33,7 +34,7 @@ def write(myco, f, type):
                     strand = '+'
                 else:
                     strand = '-'
-                f.write("{}..{}\t{}\t{}\t{}\t{}\t-\t-\t-\t{}\n".format(x.location._start, x.location._end, strand,x.location._end - x.location._start,x.qualifiers.get('locus_tag')[0],x.qualifiers.get('locus_tag')[0],x.qualifiers.get('product')[0]))
+                f.write("{}..{}\t{}\t{}\t{}\t{}\t-\t-\t-\t{}\n".format(x.location._start, x.location._end, strand,x.location._end - x.location._start,x.qualifiers.get('locus_tag')[0],x.qualifiers.get('locus_tag')[0],x.qualifiers.get('product')[0]).replace(">",""))
             else:
                 continue
     else:
@@ -43,29 +44,44 @@ def write(myco, f, type):
                     strand = '+'
                 else:
                     strand = '-'
-                f.write("{}..{}\t{}\t{}\t{}\t{}\t-\t-\t-\t{}\n".format(x.location._start, x.location._end, strand,x.location._end - x.location._start,x.qualifiers.get('locus_tag')[0],x.qualifiers.get('locus_tag')[0],x.qualifiers.get('product')[0]))
+                f.write("{}..{}\t{}\t{}\t{}\t{}\t-\t-\t-\t{}\n".format(x.location._start, x.location._end, strand,x.location._end - x.location._start,x.qualifiers.get('locus_tag')[0],x.qualifiers.get('locus_tag')[0],x.qualifiers.get('product')[0]).replace(">",""))
             else:
                 continue
 
 
 def main():
-    genbank_file = bio_util.load_references(args.input_filename)
-    myco = genbank_file[0]
-    protein_or_rna_count = count(myco,args.conversion_type)
+
     if args.conversion_type == 'ptt' or args.conversion_type == 'PTT':
+        genbank_file = bio_util.load_references(args.input_filename)
+        myco = genbank_file[0]
+        protein_count = count(myco, args.conversion_type)
         f = open('{}.ptt'.format(args.output_filename), 'w')
         f.write("{} - {}..{}\n".format(myco.description, myco.features[0].location._start, myco.features[0].location._end))
-        f.write("{} proteins\n".format(protein_or_rna_count))
+        f.write("{} proteins\n".format(protein_count))
         write(myco, f, 'protein')
         f.close()
         print("File created at: {}".format(os.path.realpath("{}.ptt".format(args.output_filename))))
     elif args.conversion_type == 'rnt' or args.conversion_type == 'RNT':
+        genbank_file = bio_util.load_references(args.input_filename)
+        myco = genbank_file[0]
+        rna_count = count(myco, args.conversion_type)
         f = open('{}.rnt'.format(args.output_filename), 'w')
         f.write("{} - {}..{}\n".format(myco.description, myco.features[0].location._start, myco.features[0].location._end))
-        f.write("{} rnas\n".format(protein_or_rna_count))
+        f.write("{} rnas\n".format(rna_count))
         write(myco, f, 'rna')
         f.close()
         print("File created at: {}".format(os.path.realpath("{}.rnt".format(args.output_filename))))
+    elif args.conversion_type == 'fna' or args.conversion_type == 'FNA':
+        gbk_filename = args.input_filename
+        faa_filename = args.output_filename
+        input_handle = open(gbk_filename, 'r')
+        output_handle = open("{}.fna".format(faa_filename),'w')
+
+        for seq_record in SeqIO.parse(input_handle,"genbank"):
+            output_handle.write(">{} {}\n{}\n".format(seq_record.id,seq_record.description,seq_record.seq))
+        output_handle.close()
+        input_handle.close()
+        print("File created at: {}".format(os.path.realpath("{}.fna".format(args.output_filename))))
     else:
         print("You have entered an invalid file extension for the output file that you want to convert.")
         sys.exit(0)

@@ -1,7 +1,5 @@
 # Genbank Converter
 
-[![N|Solid]
-
 A way to convert your genbank file to a *.fna, *.rnt, or *.ptt file formats.
 
   - Scrapes your genbank file of protein / RNA records. 

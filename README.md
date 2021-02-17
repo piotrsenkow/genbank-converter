@@ -1,6 +1,6 @@
-# LanzaTech Genbank Converter
+# Genbank Converter
 
-[![N|Solid](http://www.lanzatech.com/wp-content/uploads/2014/05/LanzaTech-Logo-Final-a.png)](http://www.lanzatech.com/)
+[![N|Solid]
 
 A way to convert your genbank file to a *.fna, *.rnt, or *.ptt file formats.
 
